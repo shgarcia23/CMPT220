@@ -1,0 +1,88 @@
+import java.util.Scanner;
+
+
+
+public class Main {
+    public static void main(String[] args) {
+        int[] values_cases = {1, 1000000, 5, 10, 25, 50, 100000, 100, 250,
+                500, 750, 1000, 25000000, 10000, 25000, 50000, 75000,
+                500000, 75, 750000, 1000000, 5000000, 5000, 10000000,
+                20000000, 250000};
+
+        int[] cases = new int[26];
+        for (int i = 0; i < 26; i++) {
+            cases[i] = i + 1;
+        }
+        Scanner userinput = new Scanner(System.in);
+        int rounds = 3;
+        int user_case, user_value, remaining_cases = 26;
+
+        System.out.println("Deal or no Deal ");
+        System.out.println("choose a case (1-26)");
+        user_case = userinput.nextInt();
+        user_value = values_cases[user_case - 1];
+
+        cases[user_case - 1] = 0;
+        remaining_cases--;
+
+        while (remaining_cases > 1) {
+            System.out.println("Select " + rounds + " cases to open: ");
+            for (int i = 0; i < rounds; i++) {
+
+                System.out.print("Available cases: [");
+                for (int x = 0; x < 26; x++) {
+                    if (cases[x] != 0) {
+                        System.out.print(cases[x] + " ");
+                    }
+                }
+                System.out.println("]");
+
+                int open_case = userinput.nextInt();
+                if (open_case > 0 && open_case <= 26 && cases[open_case - 1] != 0) {
+                    System.out.println("You opened case #" + open_case + " and it contains: $" + values_cases[open_case - 1]);
+                    cases[open_case - 1] = 0;
+                    remaining_cases--;
+
+                } else {
+                    System.out.println("not available.select a different case");
+                    i--;
+                }
+            }
+            double sum = 0;
+            for (int x = 0; x < 26; x++) {
+                if (cases[x] != 0) {
+                    sum += values_cases[cases[x]];
+                }
+
+
+            }
+            double offer = (sum / remaining_cases) * 0.8;
+            System.out.printf("The banker offers you: $%.2f%n", offer);
+            System.out.println("Deal or No Deal?");
+            String response = userinput.next();
+            if (response.equalsIgnoreCase("Deal")) {
+                System.out.println("You accepted the deal! Your final amount is: $" + offer);
+                userinput.close();
+                return;
+            }
+        }
+        System.out.println("You have reached the final round!");
+        System.out.println("Your case value is: $" + user_value);
+        System.out.println("What's your final decision? Deal or No Deal?");
+        String finalDecision = userinput.next();
+        if (finalDecision.equalsIgnoreCase("Deal")) {
+            System.out.println("You accepted the deal! Your final amount is: $" + user_value);
+        } else {
+            for (int i = 0; i < 26; i++) {
+                if (cases[i] != 0) {
+                    System.out.println("You chose No Deal! Your final amount is: $" + values_cases[cases[i] - 1]);
+                    break;
+                }
+            }
+        }
+
+        userinput.close();
+
+
+    }
+}
