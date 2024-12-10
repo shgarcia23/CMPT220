@@ -1,0 +1,145 @@
+import java.io.*;
+import java.util.*;
+
+class character{
+    String name;
+    int health;
+    int level;
+    int attack_power;
+
+    public character(String name){
+        this.name= name ;
+        this.health=100;
+        this.level=1;
+        this .attack_power=10;
+
+    }
+    public void level_up(){
+        health=health+20;
+        level=level+1;
+        attack_power=attack_power+15;
+        System.out.println(name+" level up to "+level+"!");
+
+
+    }
+    public void damage_taken(int damage){
+        health=health-damage;
+        if(health<0)health=0;
+    }
+    public void heal(int amount_healed ){
+        health=health+amount_healed;
+        System.out.println(name+" healed for "+amount_healed+"health");
+
+    }
+    public boolean alive(){
+        return health>0;
+    }
+}
+public class Main {
+    private static final List<String> enemies= Arrays.asList("goblin","orc","dragon","troll","vampire","zombie");
+    private static character player;
+    private static int enemies_killed=0;
+
+    public static void main(String[] args) {
+        welcome();
+        create_character();
+        game_loop();
+        save_progress();
+
+    }
+    private static void welcome() {
+        System.out.println("Welcome to the Fantasy RPG!");
+    }
+    private static void create_character(){
+        Scanner sc=new Scanner(System.in);
+        System.out.println("Character name:");
+        String name=sc.nextLine();
+        player = new character(name);
+        System.out.println(" character "+player.name+" created");
+    }
+    private static void game_loop(){
+        Scanner sc = new Scanner(System.in);
+        boolean playing =true;
+
+        while (playing){
+            System.out.println("\nChoose an action:");
+            System.out.println("1. Fight an enemy");
+            System.out.println("2. Rest and regain health");
+            System.out.println("3. Check status");
+            System.out.println("4. Exit game");
+            System.out.print("Your choice: ");
+            int choice = Integer.parseInt(sc.nextLine());
+
+            switch (choice) {
+                case 1:
+                    fight_enemy();
+                    break;
+                case 2:
+                    rest();
+                    break;
+                case 3:
+                    check_status();
+                    break;
+                case 4:
+                    playing = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+
+        }
+    }
+    }
+    public static void fight_enemy(){
+        Random random =new Random();
+        String enemy_name=enemies.get(random.nextInt(enemies.size()));
+        character enemy=new character(enemy_name);
+        System.out.println(enemy_name+"has appeared");
+
+        while(player.alive() && enemy.alive()){
+            enemy.damage_taken(player.attack_power);
+            System.out.println(enemy.name+"attack"+player.name+"for"+enemy.attack_power+"damage");
+
+            if (enemy.alive()){
+                player.damage_taken(enemy.attack_power);
+                System.out.println(enemy.name+" attack " +player.name+" for "+enemy.attack_power+" damage");
+            }
+        }
+        if (player.alive()){
+            System.out.println("you defeated"+enemy.name);
+            player.level_up();
+            enemies_killed++;
+        }else{
+            System.out.println("you were killed by "+enemy.name);
+            System.out.println("Game over");
+            System.exit(0);
+        }
+    }
+    private static void rest(){
+        int heal_amount=30;
+        player.heal(heal_amount);
+        System.out.println(player.name+" rest and regains "+heal_amount+" health ");
+
+    }
+    private static void check_status(){
+        System.out.println("character:"+ player.name);
+        System.out.println("level:"+ player.level);
+        System.out.println("health"+player.health);
+        System.out.println("Attack power"+player.attack_power);
+        System.out.println("emenies killed"+enemies_killed);
+
+
+    }
+    private static void save_progress(){
+        try(PrintWriter writer =new PrintWriter(new FileWriter("save.txt"))){
+            writer.println("character:"+ player.name);
+            writer.println("level:"+ player.level);
+            writer.println("health"+player.health);
+            writer.println("Attack power"+player.attack_power);
+            writer.println("emenies killed"+enemies_killed);
+            System.out.println("Game progress saved successfully");
+        }catch(IOException e){
+            System.out.println("An error occurred while saving the game: " + e.getMessage());
+        }
+
+    }
+}
